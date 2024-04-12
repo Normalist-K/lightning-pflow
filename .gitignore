@@ -6,3 +6,9 @@ __pycache__
 build
 *.c
 pflow/utils/monotonic_align/*.pyd
+pflow/utils/monotonic_align
+
+ckpt
+datasets
+monotonic_align.egg-info
+notebooks

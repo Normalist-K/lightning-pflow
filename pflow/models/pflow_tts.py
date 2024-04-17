@@ -170,6 +170,7 @@ class pflowTTS(BaseLightningClass):  #
         attn = attn.squeeze(1).transpose(1,2)
         mu_y = torch.matmul(attn.squeeze(1).transpose(1, 2), mu_x.transpose(1, 2))
         mu_y = mu_y.transpose(1, 2)
+        # mu_y = torch.matmul(mu_x, attn.squeeze(1).transpose(1, 2))
 
         y_loss_mask = sequence_mask(y_lengths, y_max_length).unsqueeze(1).to(x_mask)
         if prompt is None:

@@ -4,11 +4,11 @@ defaults:
 
 _target_: pflow.data.text_mel_datamodule.TextMelDataModule
 name: vctk
-train_filelist_path: data/filelists/vctk_audio_sid_text_train_filelist.txt
-valid_filelist_path: data/filelists/vctk_audio_sid_text_val_filelist.txt
+train_filelist_path: filelists/vctk_audio_sid_text_train_filelist_v0.92.txt
+valid_filelist_path: filelists/vctk_audio_sid_text_val_filelist_v0.92.txt.cleaned
 batch_size: 32
 add_blank: True
 n_spks: 109
 data_statistics:  # Computed for vctk dataset
-  mel_mean: -6.630575
-  mel_std: 2.482914
+  mel_mean: -6.440719127655029 #-6.630575
+  mel_std: 2.4679811000823975 #2.482914

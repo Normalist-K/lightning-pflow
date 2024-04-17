@@ -43,3 +43,5 @@ gdown
 wget
 seaborn
 beartype
+
+g2pk

@@ -1,0 +1,16 @@
+# @package _global_
+
+# to execute this experiment run:
+# python train.py experiment=multispeaker
+
+defaults:
+  - override /data: aihub_va_male.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: ["aihub_va_male"]
+
+run_name: aihub_va_male
+
+ckpt_path: logs/train/aihub_va_male/runs/2024-04-08_11-51-40/checkpoints/last.ckpt

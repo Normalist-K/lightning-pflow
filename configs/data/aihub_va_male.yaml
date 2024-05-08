@@ -1,0 +1,22 @@
+_target_: pflow.data.text_mel_datamodule.TextMelDataModule
+name: aihub_va_male
+train_filelist_path: filelists/train_aihub_va_male_16k_removed_filelist.txt.cleaned
+valid_filelist_path: filelists/val_aihub_va_male_16k_filelist.txt.cleaned
+batch_size: 32
+num_workers: 20
+pin_memory: True
+cleaners: [english_cleaners2]
+add_blank: True
+n_spks: 3000
+n_fft: 1024
+n_feats: 80
+sample_rate: 16000
+hop_length: 256
+win_length: 1024
+f_min: 0
+f_max: 8000
+data_statistics:  # Computed for aihub_va_male data
+  mel_mean: -5.3936967849731445
+  mel_std: 2.6362507343292236
+seed: ${seed}
+min_sample_size: 4

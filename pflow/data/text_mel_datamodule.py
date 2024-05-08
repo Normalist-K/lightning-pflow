@@ -6,7 +6,7 @@ import torchaudio as ta
 from lightning import LightningDataModule
 from torch.utils.data.dataloader import DataLoader
 
-from pflow.text import text_to_sequence
+from pflow.text import text_to_sequence, cleaned_text_to_sequence
 from pflow.utils.audio import mel_spectrogram
 from pflow.utils.model import fix_len_compatibility, normalize
 from pflow.utils.utils import intersperse
@@ -169,8 +169,14 @@ class TextMelDataset(torch.utils.data.Dataset):
             filepath, text = filepath_and_text[0], filepath_and_text[1]
             spk = None
 
-        text = self.get_text(text, add_blank=self.add_blank)
         mel, audio = self.get_mel(filepath)
+        # repeat audio and text until it reaches minimum sample size which is 6 seconds
+        while audio.shape[1] <= self.min_sample_size * self.sample_rate:
+            text = text + ' ' + text
+            mel = torch.cat([mel, mel], dim=-1)
+            audio = torch.cat([audio, audio], dim=-1)
+        
+        text = self.get_text(text, add_blank=self.add_blank)
         # TODO: make dictionary to get different spec for same speaker
         # right now naively repeating target mel for testing purposes
         return {"x": text, "y": mel, "spk": spk, "wav":audio}
@@ -178,6 +184,7 @@ class TextMelDataset(torch.utils.data.Dataset):
     def get_mel(self, filepath):
         audio, sr = ta.load(filepath)
         assert sr == self.sample_rate
+
         mel = mel_spectrogram(
             audio,
             self.n_fft,
@@ -193,7 +200,8 @@ class TextMelDataset(torch.utils.data.Dataset):
         return mel, audio
 
     def get_text(self, text, add_blank=True):
-        text_norm = text_to_sequence(text, self.cleaners)
+        # text_norm = text_to_sequence(text, self.cleaners)
+        text_norm = cleaned_text_to_sequence(text)
         if self.add_blank:
             text_norm = intersperse(text_norm, 0)
         text_norm = torch.IntTensor(text_norm)
@@ -201,13 +209,6 @@ class TextMelDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         datapoint = self.get_datapoint(self.filepaths_and_text[index])
-        if datapoint["wav"].shape[1] <= self.min_sample_size * self.sample_rate:
-            ''' 
-            skip datapoint if too short (<4s , prompt is 3s)
-            TODO To not waste data, we can concatenate wavs less than 3s and use them
-            TODO as a hyperparameter; multispeaker dataset can use another wav of same speaker
-            '''
-            return self.__getitem__(random.randint(0, len(self.filepaths_and_text)-1))
         return datapoint
 
     def __len__(self):
